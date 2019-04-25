@@ -33,6 +33,10 @@ void setup() {
   SPI.begin();
   lcd.begin(16, 2);
   lcd.clear();
+  lcd.print("Employee Manage-");
+  lcd.setCursor(0, 1);
+  lcd.print("-ment System");
+  
   rfid.init();
   pinMode(led, OUTPUT);
   pinMode (power, OUTPUT);
@@ -110,6 +114,10 @@ void clockIn() {
   }
   else {
     Serial.println("You don't work here.");
+    lcd.clear();
+    lcd.print("You don't");
+    lcd.setCursor(0,1);
+    lcd.print("work here.");
     digitalWrite(led, HIGH);
     delay(500);
     digitalWrite(led, LOW);
