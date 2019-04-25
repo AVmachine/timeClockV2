@@ -55,7 +55,7 @@ void menu() {
   myNum = Serial.parseInt();
   switch(myNum){
     case 1:
-    Serial.print("Hello!\n");
+    clockIn();
     break;
     case 2:
     Serial.print("Hey!\n");
@@ -68,7 +68,23 @@ void menu() {
 }
 
 void clockIn(){
-  Serial.print("Please scan your);
+  Serial.print("Please scan your ID card\n");
+  while(Serial.available())                           //Waiting for a serial input that is never going to come...
+  if (rfid.isCard()){
+    rfid.readCardSerial();
+    Serial.print(rfid.serNum[0]);
+    Serial.print(" ");
+    Serial.print(rfid.serNum[1]);
+    Serial.print(" ");
+    Serial.print(rfid.serNum[2]);
+    Serial.print(" ");
+    Serial.print(rfid.serNum[3]);
+    Serial.print(" ");
+    Serial.print(rfid.serNum[4]);
+    Serial.println("");
+    break;
+  }
+  
 }
 
 void createEmployee(){
