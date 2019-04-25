@@ -1,3 +1,7 @@
+#include <Chrono.h>
+
+
+
 #include "Employees.h"
 #include <RFID.h>
 
@@ -14,6 +18,9 @@ int serNum[5];
 int myNum;
 bool access = false;
 bool clockedInStatus = false;
+Chrono myChrono;
+unsigned long hours;
+
 
 //int cards[][5] = {{117,222,140,171,140}};
 int employee_cards[1][5] = {{202, 62, 251, 41, 38}};
@@ -34,10 +41,12 @@ void setup() {
   pinMode (power, OUTPUT);
   digitalWrite(led, LOW);
   digitalWrite (power, LOW);
+  
 }
 
 void loop(){
   menu();
+
 }
 
 void menu() {
@@ -55,7 +64,7 @@ void menu() {
     Serial.print("Hey!\n");
     break;
     case 3:
-    Serial.print("I love Christine\n");
+    Serial.print("I love Christine\n");    //That's my girlfriend just fyi
     break;
   }
   Serial.read();
@@ -116,84 +125,24 @@ void clockIn(){
 
 }
 
-void changeClockInStatus()
+void changeClockInStatus()                               //Changes clock in status from true to false, or vice versa 
 {
   if(clockedInStatus == false)
   {
     clockedInStatus =true;
      Serial.println("Welcome " + e.getFirstName() + " " + e.getLastName() + "\nSuccesful Clock in\n");
+     myChrono.start();
   }
   else
   {
+    myChrono.stop();
+    hours = myChrono.elapsed()/1000;
     clockedInStatus =false;
     Serial.println("Goodbye " + e.getFirstName() + " " + e.getLastName() + "\nSuccesful Clock out\n");
+    Serial.println(hours);
   }
-    
 }
 
-void createEmployee(){
-  Serial.println("Please enter the first name of the employee: ");
-  Serial.println("Please enter the last name of the employee: ");
-  Serial.println("Enter 1 for Employee or 2 for Manager");
-}
-
-void validateTag(){
-  if (rfid.isCard()) {
-    if (rfid.readCardSerial()) {
-      Serial.print(rfid.serNum[0]);
-      Serial.print(" ");
-      Serial.print(rfid.serNum[1]);
-      Serial.print(" ");
-      Serial.print(rfid.serNum[2]);
-      Serial.print(" ");
-      Serial.print(rfid.serNum[3]);
-      Serial.print(" ");
-      Serial.print(rfid.serNum[4]);
-      Serial.println("");
-
-      for (int x = 0; x < sizeof(employee_cards); x++) {
-        for (int i = 0; i < sizeof(rfid.serNum); i++ ) {
-          //if (rfid.serNum[i] != employee_cards[x][i]) {
-          if (rfid.serNum[i] != e.getEmpID(i)) {
-            access = false;
-            break;
-          } else {
-            access = true;
-          }
-        }
-        if (access) break;
-      }
-
-    }
-    if (access) {
-      Serial.println("Welcome " + e.getFirstName() + " " + e.getLastName());
-      /*
-        Valid card : Switch ON the LED for 1000 ms (1 second)
-      */
-      digitalWrite(led, HIGH);
-      delay(1000);
-      /*
-        Valid card : Switch ON the POWER PIN for 2000 ms (2 seconds)), the POWER PIN can activate for example a relais, controlling a doorlock)
-      */
-      digitalWrite(power, HIGH);
-      delay(2000);
-      digitalWrite(power, LOW);
-      digitalWrite(led, LOW);
-      access = false;
-    }
-    else {
-      /*
-        NON-Valid card : switch ON and OFF the LED twice for 0,5 seconds
-      */
-      Serial.println("Not allowed!");
-      digitalWrite(led, HIGH);
-      delay(500);
-      digitalWrite(led, LOW);
-      delay(500);
-      digitalWrite(led, HIGH);
-      delay(500);
-      digitalWrite(led, LOW);
-    }
-  }
-  rfid.halt();
+void storeTime(){
+  
 }
