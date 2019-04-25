@@ -69,7 +69,7 @@ void menu() {
 
 void clockIn(){
   Serial.print("Please scan your ID card\n");
-  while(Serial.available())                           //Waiting for a serial input that is never going to come...
+  while(Serial.available())                           //Waiting for a serial input that is never going to come... Trickery.
   if (rfid.isCard()){
     rfid.readCardSerial();
     Serial.print(rfid.serNum[0]);
@@ -84,7 +84,43 @@ void clockIn(){
     Serial.println("");
     break;
   }
-  
+
+  for (int x = 0; x < sizeof(employee_cards); x++) {
+        for (int i = 0; i < sizeof(rfid.serNum); i++ ) {
+          //if (rfid.serNum[i] != employee_cards[x][i]) {
+          if (rfid.serNum[i] != e.getEmpID(i)) {
+            access = false;
+            break;
+          } else {
+            access = true;
+          }
+        }
+        if (access) break;
+      }
+      
+   if(access){
+      Serial.println("Welcome " + e.getFirstName() + " " + e.getLastName());
+      
+      digitalWrite(led, HIGH);
+      delay(1000);
+      
+      digitalWrite(power, HIGH);
+      delay(2000);
+      digitalWrite(power, LOW);
+      digitalWrite(led, LOW);
+      access = false;
+    }
+    else{
+      Serial.println("You don't work here.");
+      digitalWrite(led, HIGH);
+      delay(500);
+      digitalWrite(led, LOW);
+      delay(500);
+      digitalWrite(led, HIGH);
+      delay(500);
+      digitalWrite(led, LOW);
+    }
+
 }
 
 void createEmployee(){
