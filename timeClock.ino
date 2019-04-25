@@ -8,23 +8,19 @@
 
 RFID rfid(SS_PIN, RST_PIN);
 Employee e;
-
 int power = 7;
 int led = 8;
 int serNum[5];
 int myNum;
-/*
-  This integer should be the code of Your Mifare card / tag
-*/
+bool access = false;
+bool clockedInStatus = false;
+
 //int cards[][5] = {{117,222,140,171,140}};
-//Array of possible employee ids to be used
 int employee_cards[1][5] = {{202, 62, 251, 41, 38}};
 
 int (*p_array)[1][5] = &employee_cards;
 
-Employee p;
 
-bool access = false;
 
 void setup() {
   Serial.begin(9600);
@@ -40,10 +36,8 @@ void setup() {
   digitalWrite (power, LOW);
 }
 
-void loop() {
-  
+void loop(){
   menu();
-  //validateTag();
 }
 
 void menu() {
@@ -91,7 +85,7 @@ void clockIn(){
           if (rfid.serNum[i] != e.getEmpID(i)) {
             access = false;
             break;
-          } else {
+          }else{
             access = true;
           }
         }
@@ -99,8 +93,7 @@ void clockIn(){
       }
       
    if(access){
-      Serial.println("Welcome " + e.getFirstName() + " " + e.getLastName());
-      
+      changeClockInStatus();
       digitalWrite(led, HIGH);
       delay(1000);
       
@@ -121,6 +114,21 @@ void clockIn(){
       digitalWrite(led, LOW);
     }
 
+}
+
+void changeClockInStatus()
+{
+  if(clockedInStatus == false)
+  {
+    clockedInStatus =true;
+     Serial.println("Welcome " + e.getFirstName() + " " + e.getLastName() + "\nSuccesful Clock in\n");
+  }
+  else
+  {
+    clockedInStatus =false;
+    Serial.println("Goodbye " + e.getFirstName() + " " + e.getLastName() + "\nSuccesful Clock out\n");
+  }
+    
 }
 
 void createEmployee(){
